@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oficina das Palavras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2B2150; --soft:#6B5F93; --paper:#FFFFFF;
+  --pink:#FF4F9A; --orange:#FF9F1C; --yellow:#FFD23F; --green:#2EC4A0; --blue:#3A86FF; --purple:#8338EC; --red:#FF5A5F;
+  --sky:#C9ECFF; --cream:#FFF4E0;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --cream:#FFF4E0; } }
+:root[data-theme="dark"]{ --cream:#FFF4E0; }
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0; color:var(--ink); font-family:Nunito,"Trebuchet MS",system-ui,sans-serif; font-size:18px; line-height:1.45;
+  background:linear-gradient(180deg,var(--sky) 0%, var(--cream) 55%) fixed; min-height:100vh}
+body::before{content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; opacity:.5;
+  background-image:radial-gradient(circle at 10% 20%, #FFD23F 0 14px, transparent 15px),
+    radial-gradient(circle at 88% 12%, #FF4F9A 0 10px, transparent 11px),
+    radial-gradient(circle at 80% 70%, #2EC4A0 0 16px, transparent 17px),
+    radial-gradient(circle at 15% 85%, #3A86FF 0 12px, transparent 13px),
+    radial-gradient(circle at 50% 45%, #8338EC 0 8px, transparent 9px)}
+h1,h2,h3,.gb,.chip,.tile{font-family:"Baloo 2","Arial Rounded MT Bold",system-ui,sans-serif}
+h1{font-size:clamp(2.1rem,7vw,3.2rem); line-height:1; margin:0; color:var(--purple); text-shadow:3px 3px 0 var(--yellow)}
+h2{font-size:1.8rem; margin:0; line-height:1.1}
+p{margin:0 0 8px}
+.wrap{max-width:860px; margin:0 auto; padding:0 16px 60px}
+.top{position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:rgba(255,255,255,.88); backdrop-filter:blur(8px); border-bottom:3px solid #fff; box-shadow:0 4px 0 rgba(43,33,80,.06)}
+.topin{max-width:860px; margin:0 auto; padding:8px 16px; display:flex; align-items:center; gap:8px}
+.brand{flex:1; font-family:"Baloo 2",sans-serif; font-weight:800; font-size:1.15rem; color:var(--purple)}
+.chip{background:#fff; border:3px solid var(--yellow); border-radius:999px; padding:2px 12px; font-weight:800; font-size:1.05rem}
+.iconbtn{background:#fff; border:3px solid var(--blue); border-radius:50%; width:42px; height:42px; font-size:1.1rem; cursor:pointer}
+
+.gb{--c:var(--blue); display:inline-flex; align-items:center; justify-content:center; gap:6px; background:var(--c); color:#fff; border:none; border-radius:18px; padding:12px 20px; min-height:52px; font-size:1.15rem; font-weight:800; cursor:pointer; box-shadow:0 6px 0 rgba(0,0,0,.2); transition:transform .08s, box-shadow .08s; text-shadow:0 2px 0 rgba(0,0,0,.15)}
+.gb:active{transform:translateY(4px); box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.gb:focus-visible,.card:focus-visible,.mem:focus-visible,.tile:focus-visible{outline:4px solid var(--purple); outline-offset:3px}
+.gb.white{background:#fff; color:var(--ink); text-shadow:none; border:3px solid #E6E0F5}
+.gb[disabled]{opacity:.55; cursor:default}
+.gb.ok{--c:var(--green)} .gb.bad{--c:var(--red)}
+.row{display:flex; flex-wrap:wrap; gap:10px}
+
+/* home */
+.hero{display:flex; align-items:center; gap:14px; padding:22px 0 8px}
+.mascot{width:110px; height:110px; flex:0 0 auto}
+.mascot.bounce{animation:bounce .5s}
+@keyframes bounce{30%{transform:translateY(-12px) scale(1.05)}60%{transform:translateY(0) scale(.97)}}
+.bubble{position:relative; background:#fff; border:3px solid var(--ink); border-radius:20px; padding:10px 14px; font-weight:800; box-shadow:0 5px 0 rgba(43,33,80,.12)}
+.bubble::before{content:""; position:absolute; left:-13px; top:22px; border:10px solid transparent; border-right-color:var(--ink); border-left:0}
+.bubble::after{content:""; position:absolute; left:-8px; top:24px; border:8px solid transparent; border-right-color:#fff; border-left:0}
+.games{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; margin-top:14px}
+.card{position:relative; text-align:left; background:#fff; border:4px solid var(--c); border-radius:24px; padding:16px; cursor:pointer; box-shadow:0 7px 0 var(--c); color:var(--ink); font:inherit; transition:transform .1s}
+.card:active{transform:translateY(4px); box-shadow:0 3px 0 var(--c)}
+.card .em{font-size:2.6rem; line-height:1; display:inline-grid; place-items:center; width:64px; height:64px; border-radius:18px; background:var(--c); margin-bottom:8px}
+.card h3{font-size:1.35rem; margin:0; color:var(--c); filter:brightness(.85)}
+.card p{color:var(--soft); font-size:.95rem; margin:0}
+.card .won{position:absolute; top:10px; right:12px; font-size:1.6rem}
+.album{background:#fff; border:4px dashed var(--pink); border-radius:24px; padding:16px; margin-top:22px}
+.album h3{margin:0 0 8px; color:var(--pink); font-size:1.3rem}
+.slots{display:grid; grid-template-columns:repeat(auto-fill,minmax(64px,1fr)); gap:10px}
+.slot{aspect-ratio:1; border-radius:18px; background:#F3EFFB; display:grid; place-items:center; font-size:2.2rem; border:3px solid #E6E0F5}
+.slot.got{background:var(--yellow); border-color:var(--orange); animation:bounce .6s}
+
+/* jogo */
+.ghead{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:16px 0 8px}
+.bar{height:16px; background:#fff; border:3px solid #E6E0F5; border-radius:99px; overflow:hidden; margin-bottom:12px}
+.bar i{display:block; height:100%; background:repeating-linear-gradient(45deg,var(--green) 0 12px,#48D9B5 12px 24px); border-radius:99px; transition:width .3s}
+.stage{background:#fff; border:4px solid #E6E0F5; border-radius:26px; padding:18px; box-shadow:0 7px 0 #E6E0F5}
+.coach{display:flex; align-items:center; gap:10px; margin-bottom:12px}
+.coach .mascot{width:70px; height:70px}
+.coach .bubble{flex:1; font-size:1rem}
+.q{font-family:"Baloo 2",sans-serif; font-size:1.45rem; line-height:1.25; font-weight:700; margin:4px 0 14px; text-align:center}
+.opts{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px}
+.opts .gb{justify-content:flex-start; text-align:left; font-size:1.08rem; padding:12px 16px}
+.letter{display:inline-grid; place-items:center; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,.3); flex:0 0 auto}
+.fb{min-height:1.4em; font-weight:800; margin-top:12px; text-align:center; font-size:1.05rem}
+.fb.good{color:#139A7A} .fb.no{color:#D6334A}
+.timer{font-family:"Baloo 2",sans-serif; font-size:1.4rem; font-weight:800; background:var(--orange); color:#fff; border-radius:999px; padding:2px 16px}
+.bigvf{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.bigvf .gb{font-size:1.5rem; min-height:90px}
+.memgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+@media (max-width:560px){ .memgrid{grid-template-columns:repeat(3,1fr)} }
+.mem{aspect-ratio:1/1.05; border:none; border-radius:18px; cursor:pointer; font-family:Nunito,sans-serif; font-weight:800; font-size:.92rem; color:var(--ink); padding:6px; perspective:600px; background:transparent}
+.mem .in{position:relative; width:100%; height:100%; transition:transform .35s; transform-style:preserve-3d}
+.mem.open .in,.mem.done .in{transform:rotateY(180deg)}
+.mem .f,.mem .b{position:absolute; inset:0; border-radius:18px; display:grid; place-items:center; padding:6px; backface-visibility:hidden; -webkit-backface-visibility:hidden; box-shadow:0 5px 0 rgba(0,0,0,.15)}
+.mem .f{background:linear-gradient(135deg,var(--purple),var(--pink)); color:#fff; font-size:2rem}
+.mem .b{transform:rotateY(180deg); background:#fff; border:4px solid var(--blue); text-align:center; line-height:1.2}
+.mem .b.def{border-color:var(--orange); background:#FFF8EC}
+.mem.done .b{background:#DFF8F1; border-color:var(--green)}
+.slotsw{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:10px 0 16px}
+.sl{width:46px; height:54px; border-radius:12px; background:#F3EFFB; border:3px dashed #CFC4EC; display:grid; place-items:center; font-family:"Baloo 2",sans-serif; font-weight:800; font-size:1.6rem; cursor:pointer; color:var(--ink)}
+.sl.f{background:var(--yellow); border:3px solid var(--orange)}
+.slotsw.win .sl{background:var(--green); border-color:#139A7A; color:#fff}
+.tiles{display:flex; flex-wrap:wrap; justify-content:center; gap:8px}
+.tile{width:52px; height:56px; font-size:1.7rem; padding:0; --c:var(--blue)}
+.hint{text-align:center; background:#FFF8EC; border:3px solid var(--yellow); border-radius:16px; padding:8px 12px; font-weight:800}
+.pool{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:14px; min-height:56px}
+.pool .gb{--c:var(--purple); font-size:1rem; padding:8px 14px; min-height:46px}
+.pool .gb.sel{outline:4px solid var(--yellow); outline-offset:2px}
+.buckets{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px}
+.bucket{border:4px solid var(--c); border-radius:20px; background:#fff; padding:10px; min-height:120px; cursor:pointer; font:inherit; color:var(--ink); text-align:center; display:flex; flex-direction:column; gap:6px; align-items:center}
+.bucket b{font-family:"Baloo 2",sans-serif; font-size:1.15rem; color:#fff; background:var(--c); border-radius:12px; padding:2px 12px}
+.bucket .in-b{display:flex; flex-wrap:wrap; gap:4px; justify-content:center}
+.bucket .in-b span{background:#F3EFFB; border-radius:10px; padding:2px 8px; font-size:.85rem; font-weight:800}
+.ansline{display:flex; flex-direction:column; gap:8px; margin:0 auto 14px; max-width:420px}
+.ansline .step{display:flex; align-items:center; gap:10px; background:#DFF8F1; border:3px solid var(--green); border-radius:16px; padding:8px 12px; font-weight:800}
+.ansline .step i{font-style:normal; display:grid; place-items:center; width:30px; height:30px; border-radius:50%; background:var(--green); color:#fff; font-family:"Baloo 2",sans-serif}
+.ansline .ph{border:3px dashed #CFC4EC; border-radius:16px; padding:10px; text-align:center; color:var(--soft)}
+.end{text-align:center}
+.end .big{font-size:4rem; line-height:1.1}
+.end .stars3{font-size:2.6rem; color:var(--orange); letter-spacing:4px}
+.review{text-align:left; background:#FFF8EC; border-radius:16px; padding:10px 14px 10px 30px; margin:12px 0}
+.review li{margin-bottom:6px}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.pop{animation:pop .35s}
+@keyframes pop{0%{transform:scale(.6)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+.conf{position:fixed; top:-14px; width:12px; height:16px; z-index:50; border-radius:4px; pointer-events:none; animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(600deg)}}
+@media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important} }
+.track{display:flex; gap:6px; overflow-x:auto; flex:1; scrollbar-width:none}
+.track::-webkit-scrollbar{display:none}
+.stop{flex:0 0 auto; display:flex; align-items:center; gap:6px; background:#fff; border:3px solid #E6E0F5; color:var(--soft); border-radius:999px; padding:4px 12px 4px 4px; font-family:"Baloo 2",sans-serif; font-weight:800; font-size:.95rem; cursor:pointer}
+.stop b{display:grid; place-items:center; width:28px; height:28px; border-radius:50%; background:#E6E0F5; color:var(--ink)}
+.stop.on{border-color:var(--pink); color:var(--ink)} .stop.on b{background:var(--pink); color:#fff}
+.stop.done b{background:var(--green); color:#fff}
+.part{display:none} .part.on{display:block}
+.phead{margin:20px 0 10px}
+.phead .time{display:inline-block; background:var(--orange); color:#fff; font-family:"Baloo 2",sans-serif; font-weight:800; border-radius:999px; padding:0 12px}
+.phead h2{font-size:2rem; color:var(--purple); margin-top:6px}
+.lead{color:var(--soft); font-weight:600}
+.box{background:#fff; border:4px solid #E6E0F5; border-radius:24px; padding:18px; margin:16px 0; box-shadow:0 6px 0 #E6E0F5}
+.box h3{font-size:1.4rem; margin:0 0 8px; color:var(--blue)}
+.key{border-color:var(--yellow); box-shadow:0 6px 0 var(--orange); background:#FFFBEA}
+.key .tagk{font-family:"Baloo 2",sans-serif; font-weight:800; color:var(--orange); font-size:1.1rem}
+.voice{background:#fff; border:4px solid var(--pink); border-radius:22px; padding:14px 16px; margin:14px 0; box-shadow:0 6px 0 #FFC2DD}
+.voice .tagv{font-family:"Baloo 2",sans-serif; font-weight:800; color:var(--pink)}
+.voice .qv{font-weight:800; font-size:1.1rem; margin:4px 0 10px}
+.voice .model{background:#FFF0F7; border-radius:14px; padding:10px 14px; margin-top:10px}
+.voice.did{border-color:var(--green); box-shadow:0 6px 0 #A8EBDB}
+.game{border-color:var(--blue); box-shadow:0 6px 0 #A9C8FF}
+.game .tagg{font-family:"Baloo 2",sans-serif; font-weight:800; color:var(--blue); font-size:1.15rem; display:block; margin-bottom:6px}
+.poem{font-family:"Baloo 2",sans-serif; font-size:1.45rem; line-height:1.5; background:#F7F3FF; border-radius:20px; padding:16px 20px; margin:12px 0}
+.poem .t{font-size:1.6rem; color:var(--purple); font-weight:800; margin-bottom:6px}
+.st{border-radius:14px; padding:4px 10px; margin:6px 0; transition:background .3s}
+.v{display:flex; gap:10px; align-items:baseline}
+.v .n{display:none; min-width:26px; font-size:.9rem; color:#fff; background:var(--blue); border-radius:8px; text-align:center}
+.poem.show-v .v .n{display:inline-block}
+.poem.show-e .st:nth-of-type(odd){background:#FFE3F0} .poem.show-e .st:nth-of-type(even){background:#DDF3FF}
+.r{border-radius:8px; padding:0 3px; transition:background .3s}
+.poem.show-r .r.a{background:var(--yellow)} .poem.show-r .r.b{background:#9EF0D9} .poem.show-r .r.c{background:#FFB8D6}
+.syl{display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin:10px 0}
+.syl span{font-family:"Baloo 2",sans-serif; font-weight:800; font-size:1.4rem; background:#F3EFFB; border-radius:12px; padding:4px 12px; transition:transform .15s, background .15s}
+.syl span.beat{background:var(--orange); color:#fff; transform:scale(1.2)}
+.figs{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px}
+.fig{background:#fff; border:4px solid var(--c); border-radius:22px; padding:14px; box-shadow:0 6px 0 var(--c)}
+.fig .ic{font-size:2.4rem} .fig h3{color:var(--c); filter:brightness(.8); margin:2px 0}
+.fig .clue{background:#F7F3FF; border-radius:12px; padding:8px 10px; font-weight:800; font-size:.95rem; margin-top:8px}
+.fig .ex{font-style:italic}
+.scenes{display:grid; gap:10px}
+.scene{display:flex; gap:12px; align-items:flex-start; background:#fff; border:3px solid #E6E0F5; border-radius:18px; padding:12px}
+.scene .num{flex:0 0 auto; width:40px; height:40px; border-radius:50%; display:grid; place-items:center; background:var(--ink); color:#fff; font-family:"Baloo 2",sans-serif; font-weight:800; font-size:1.2rem}
+.scene .emo{font-size:1.8rem}
+.flips{display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:10px}
+.flip{min-height:110px; border:none; border-radius:18px; cursor:pointer; font:inherit; font-weight:800; color:#fff; background:var(--c); box-shadow:0 5px 0 rgba(0,0,0,.18); padding:10px}
+.flip.back{background:#fff; color:var(--ink); border:3px solid var(--c); font-weight:600; font-size:.95rem}
+.text{background:#FFFBEA; border:3px solid var(--yellow); border-radius:18px; padding:16px 18px; font-size:1.08rem; line-height:1.6}
+.text p{margin:0 0 10px}
+.steps5{counter-reset:k; list-style:none; padding:0; margin:0; display:grid; gap:8px}
+.steps5 li{counter-increment:k; position:relative; background:#fff; border:3px solid #E6E0F5; border-radius:16px; padding:10px 12px 10px 54px}
+.steps5 li::before{content:counter(k); position:absolute; left:10px; top:8px; width:34px; height:34px; border-radius:50%; background:var(--green); color:#fff; display:grid; place-items:center; font-family:"Baloo 2",sans-serif; font-weight:800}
+.navbtns{display:flex; justify-content:space-between; gap:10px; margin-top:24px}
+.hero2{display:flex; align-items:center; gap:14px; padding:18px 0 4px}
+.roteiro{list-style:none; padding:0; margin:12px 0 0; display:grid; gap:6px; max-width:520px}
+.roteiro li{display:flex; justify-content:space-between; background:#fff; border:3px solid #E6E0F5; border-radius:14px; padding:6px 12px; font-weight:800}
+.roteiro li span:last-child{color:var(--orange)}
+</style>
+</head>
+<body>
+<header class="top"><div class="topin">
+  <nav class="track" id="track" aria-label="Etapas"></nav>
+  <span class="chip">🪙 <span id="coins">0</span></span>
+  <span class="chip" style="border-color:var(--pink)">⭐ <span id="stk">0</span></span>
+  <button class="iconbtn" id="snd" aria-label="Som">🔊</button>
+</div></header>
+<main class="wrap">
+<section class="hero2"><svg class="mascot" viewBox="0 0 120 120" aria-hidden="true">
+<path d="M14 30 Q37 20 60 32 Q83 20 106 30 L106 96 Q83 86 60 98 Q37 86 14 96 Z" fill="#fff" stroke="#2B2150" stroke-width="4" stroke-linejoin="round"/>
+<path d="M60 32 L60 98" stroke="#2B2150" stroke-width="4"/>
+<path d="M8 34 L8 102 Q34 92 60 104 Q86 92 112 102 L112 34" fill="none" stroke="#3A86FF" stroke-width="6" stroke-linejoin="round"/>
+<ellipse cx="42" cy="58" rx="6" ry="8" fill="#2B2150"/><ellipse cx="78" cy="58" rx="6" ry="8" fill="#2B2150"/>
+<circle cx="44" cy="55" r="2.4" fill="#fff"/><circle cx="80" cy="55" r="2.4" fill="#fff"/>
+<circle cx="32" cy="72" r="6" fill="#FF4F9A" opacity=".5"/><circle cx="88" cy="72" r="6" fill="#FF4F9A" opacity=".5"/>
+<path d="M50 74 Q60 84 70 74" stroke="#2B2150" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M52 12 L60 24 L68 12" fill="#FFD23F" stroke="#2B2150" stroke-width="3" stroke-linejoin="round"/>
+</svg><div class="bubble">Oi, Sofia! Eu sou o <b>Lelê</b>, um livro que adora brincar com palavras. 📖<br>Hoje você vai descobrir que literatura é um jogo, e você já sabe jogar!</div></section>
+<h1>Oficina das Palavras</h1>
+<ul class="roteiro" id="roteiro"></ul>
+
+<section class="part" data-title="Aquecimento" data-min="10">
+  <div class="phead"><span class="time">Etapa 1 · 10 min</span><h2>Palavras que brincam</h2>
+  <p class="lead">Poesia começa com uma coisa que você já faz desde pequena: brincar com o som das palavras.</p></div>
+  <div class="voice" data-model="Exemplo: Sofia rima com magia, alegria, fantasia, dia, maresia!"><span class="tagv">🎤 Fale em voz alta</span><p class="qv">Diga 3 palavras que rimam com o seu nome.</p></div>
+  <div class="box game"><span class="tagg">🎮 Qual palavra rima?</span><div id="g-rima"></div></div>
+  <div class="voice" data-model="Três pratos de trigo para três tigres tristes. Percebeu? O som do TR se repete e fica difícil de falar! Isso tem nome: aliteração. Vamos ver já já."><span class="tagv">🎤 Desafio do trava-língua</span><p class="qv">Fale 3 vezes bem rápido: "Três pratos de trigo para três tigres tristes." Por que é tão difícil?</p></div>
+</section>
+
+<section class="part" data-title="Poema" data-min="25">
+  <div class="phead"><span class="time">Etapa 2 · 25 min</span><h2>Dentro de um poema</h2>
+  <p class="lead">Leia o poema em voz alta. Depois aperte os botões para ver as partes dele.</p></div>
+  <div class="box">
+    <div class="poem" id="poem">
+      <div class="t">A Lua Preguiçosa</div>
+      <div class="st">
+        <div class="v"><span class="n">1</span><span>A lua acordou tarde,</span></div>
+        <div class="v"><span class="n">2</span><span>bocejou lá no <span class="r a">céu</span>,</span></div>
+        <div class="v"><span class="n">3</span><span>vestiu um pijama de nuvem</span></div>
+        <div class="v"><span class="n">4</span><span>e um chapéu de pa<span class="r a">pel</span>.</span></div>
+      </div>
+      <div class="st">
+        <div class="v"><span class="n">5</span><span>Contou estrelas no <span class="r b">dedo</span>,</span></div>
+        <div class="v"><span class="n">6</span><span>perdeu a conta no <span class="r c">meio</span>,</span></div>
+        <div class="v"><span class="n">7</span><span>dormiu de novo, sem <span class="r b">medo</span>,</span></div>
+        <div class="v"><span class="n">8</span><span>num travesseiro bem <span class="r c">cheio</span>.</span></div>
+      </div>
+    </div>
+    <div class="row">
+      <button class="gb" style="--c:var(--blue)" data-show="v">📏 Versos</button>
+      <button class="gb" style="--c:var(--pink)" data-show="e">🧱 Estrofes</button>
+      <button class="gb" style="--c:var(--green)" data-show="r">🎵 Rimas</button>
+    </div>
+    <div class="box" id="poemInfo" style="margin-bottom:0"><p class="lead">Toque em um botão.</p></div>
+  </div>
+
+  <div class="box key"><span class="tagk">🔑 Para lembrar</span>
+    <p><b>Verso</b> = cada linha 📏 · <b>Estrofe</b> = um grupinho de versos 🧱 · <b>Rima</b> = sons iguais no final 🎵 · <b>Ritmo</b> = a "música" do poema 🥁</p>
+    <p>Pense numa casa: os versos são os tijolos, as estrofes são as paredes, e a rima e o ritmo são a música tocando lá dentro.</p></div>
+
+  <div class="box"><h3>🥁 O ritmo: bata palmas!</h3>
+    <p>O ritmo é a batida do poema. Ele nasce das sílabas, das repetições e das rimas. Aperte o botão e bata uma palma em cada pedacinho.</p>
+    <div class="syl" id="syl"></div>
+    <div class="row"><button class="gb" style="--c:var(--orange)" id="clap1">👏 bo-ce-jou</button><button class="gb" style="--c:var(--purple)" id="clap2">👏 dor-miu</button></div>
+  </div>
+
+  <div class="box"><h3>🎯 Seleção de palavras: por que ESSA palavra?</h3>
+    <p>O poeta escolhe cada palavra com cuidado. Ele pensa no <b>sentido</b>, no <b>som</b> e na <b>rima</b>.</p>
+    <div id="g-sel"></div>
+  </div>
+
+  <div class="voice" data-model="Porque a lua mora no céu, junto das nuvens. Então o pijama de nuvem combina com ela. Um pijama de algodão seria de gente comum, e o poema perderia a magia."><span class="tagv">🎤 Pense e fale</span><p class="qv">Por que o poeta escolheu "pijama de nuvem" e não "pijama de algodão"?</p></div>
+
+  <div class="box game"><span class="tagg">🧩 Organização: monte a estrofe</span>
+    <p>Os versos da 2ª estrofe se misturaram! Coloque em ordem para as rimas voltarem ao lugar (dedo/medo e meio/cheio).</p>
+    <div id="g-org"></div></div>
+
+  <div class="voice" data-model="Verso é cada linha do poema; estrofe é um grupo de versos; rima é a repetição de sons no final dos versos; ritmo é a musicalidade, a batida do poema."><span class="tagv">🎤 Fale em voz alta</span><p class="qv">Explique com suas palavras: o que é verso, estrofe, rima e ritmo?</p></div>
+</section>
+
+<section class="part" data-title="Figuras" data-min="25">
+  <div class="phead"><span class="time">Etapa 3 · 25 min</span><h2>As figuras de linguagem</h2>
+  <p class="lead">São truques que os escritores usam para deixar o texto mais bonito, engraçado ou marcante. São 4 para a prova.</p></div>
+  <div class="figs">
+    <div class="fig" style="--c:var(--pink)"><div class="ic">🧸</div><h3>Personificação</h3>
+      <p>Uma coisa, animal ou natureza <b>ganha jeito de gente</b>: fala, sente, sorri, dança.</p>
+      <p class="ex">"A lua bocejou lá no céu."</p><div class="clue">🔎 Pergunte: algo que NÃO é gente está fazendo coisa de gente?</div></div>
+    <div class="fig" style="--c:var(--purple)"><div class="ic">🎭</div><h3>Metáfora</h3>
+      <p>Uma <b>comparação escondida</b>, sem a palavra "como". Diz que uma coisa É outra.</p>
+      <p class="ex">"Meu irmão é um furacão."</p><div class="clue">🔎 Tem "é" mas não é de verdade? Metáfora! Se tiver "como" ou "parece", é comparação.</div></div>
+    <div class="fig" style="--c:var(--orange)"><div class="ic">🔁</div><h3>Aliteração</h3>
+      <p>O <b>mesmo som de consoante</b> se repete várias vezes.</p>
+      <p class="ex">"O rato roeu a roupa do rei de Roma."</p><div class="clue">🔎 Leia em voz alta: algum som fica batendo? R, R, R…</div></div>
+    <div class="fig" style="--c:var(--green)"><div class="ic">😜</div><h3>Trocadilho</h3>
+      <p><b>Brincadeira com palavras</b> que têm dois sentidos ou sons parecidos. Geralmente é engraçado.</p>
+      <p class="ex">"O que o tomate foi fazer no banco? Tirar extrato!"</p><div class="clue">🔎 A graça está em uma palavra que vale duas coisas ao mesmo tempo?</div></div>
+  </div>
+  <div class="box key"><span class="tagk">🔑 O segredo das 4 figuras</span>
+    <p style="font-family:'Baloo 2',sans-serif;font-size:1.5rem;font-weight:800;line-height:1.3">🧸 vira <span style="color:var(--pink)">GENTE</span> · 🎭 vira <span style="color:var(--purple)">OUTRA COISA</span> · 🔁 repete o <span style="color:var(--orange)">SOM</span> · 😜 faz <span style="color:var(--green)">PIADA</span></p></div>
+  <div class="voice" data-model="O 'extrato' tem dois sentidos: extrato de tomate (o molho) e extrato do banco (o papel que mostra o dinheiro). A graça vem da palavra valer duas coisas."><span class="tagv">🎤 Explique a piada</span><p class="qv">Por que "tirar extrato" é engraçado na piada do tomate?</p></div>
+  <div class="box game"><span class="tagg">🧺 Coloque cada frase na caixinha certa</span><div id="g-fig"></div></div>
+  <div class="box game"><span class="tagg">🔎 Metáfora ou comparação?</span><div id="g-mc"></div></div>
+  <div class="voice" data-model="Exemplos: Personificação: 'O despertador gritou comigo'. Metáfora: 'Minha cama é uma nuvem'. Aliteração: 'Bia bebeu bastante bala'. Trocadilho: 'Por que o livro de matemática ficou triste? Porque tinha muitos problemas.'"><span class="tagv">🎤 Agora é você a escritora!</span><p class="qv">Invente uma frase para cada figura de linguagem e fale em voz alta.</p></div>
+</section>
+
+<section class="part" data-title="Chaplin" data-min="20">
+  <div class="phead"><span class="time">Etapa 4 · 20 min</span><h2>Charles Chaplin: um tesouro em preto e branco</h2>
+  <p class="lead">Livro de Flávia Muniz. Uma menina adora ir ao cinema com o pai e, numa sessão, descobre Carlitos, no filme <b>Luzes da Cidade</b>.</p></div>
+
+  <div class="box"><h3>🎬 Quem foi Charles Chaplin?</h3>
+    <p>Ator, diretor, roteirista e compositor inglês. Nasceu em <b>Londres, em 1889</b>, teve uma infância muito pobre e virou um dos maiores artistas do cinema. Morreu em <b>1977</b>, na Suíça.</p>
+    <p>Ficou famoso no <b>cinema mudo</b>: filmes sem falas, só com imagens, gestos, música e alguns <b>letreiros</b> escritos na tela. E em <b>preto e branco</b>.</p></div>
+
+  <div class="box"><h3>🎩 Quem é Carlitos?</h3>
+    <p>O personagem mais famoso de Chaplin: um vagabundo pobre, mas elegante e gentil.</p>
+    <p style="font-size:1.15rem">🎩 chapéu-coco · 🦯 bengala · 👨 bigodinho · 👖 calça larga · 🧥 paletó apertado · 👞 sapatos enormes · 🦆 jeito engraçado de andar</p>
+    <p>Ele faz a gente <b>rir e se emocionar</b> ao mesmo tempo.</p></div>
+
+  <div class="box"><h3>💡 A história de Luzes da Cidade</h3><div class="scenes" id="scenes"></div></div>
+
+  <div class="box game"><span class="tagg">🪜 Coloque a história em ordem</span><div id="g-hist"></div></div>
+
+  <div class="box"><h3>📚 O que tem no livro</h3>
+    <p>O <b>reconto</b> do filme (a história contada de novo, com as palavras da autora), <b>textos informativos</b> sobre Chaplin e seus filmes, um <b>glossário</b> de palavras do cinema e uma <b>linha do tempo</b>. Toque nos cartões do glossário:</p>
+    <div class="flips" id="flips"></div></div>
+
+  <div class="voice" data-model="Porque os filmes de Chaplin são em preto e branco, mas são tão valiosos e emocionantes que parecem um tesouro. É uma metáfora: o filme não é um tesouro de verdade, mas é comparado a um."><span class="tagv">🎤 Pense e fale</span><p class="qv">Por que o livro se chama "um tesouro em preto e branco"? Que figura de linguagem é essa?</p></div>
+  <div class="voice" data-model="Pelo toque da mão. Quando ela segura a mão dele para entregar a flor e a moeda, reconhece quem a ajudou. Ela não precisava dos olhos: reconheceu com o coração."><span class="tagv">🎤 Pense e fale</span><p class="qv">Como a florista descobre que Carlitos era quem a ajudou?</p></div>
+  <div class="voice" data-model="A bondade e a generosidade: Carlitos ajuda mesmo sendo pobre. E que as aparências enganam: a moça imaginava um homem rico, mas quem a ajudou foi um vagabundo de bom coração."><span class="tagv">🎤 Pense e fale</span><p class="qv">Qual é a mensagem principal da história?</p></div>
+</section>
+
+<section class="part" data-title="Interpretação" data-min="15">
+  <div class="phead"><span class="time">Etapa 5 · 15 min</span><h2>Detetive de textos</h2>
+  <p class="lead">Interpretar é investigar. A resposta quase sempre está no texto ou nas pistas dele.</p></div>
+  <div class="box key"><span class="tagk">🕵️ O método da detetive</span>
+    <ol class="steps5">
+      <li>Leia o <b>título</b> e imagine sobre o que vai ser.</li>
+      <li>Leia o texto <b>inteiro</b>, sem pressa.</li>
+      <li>Leia a <b>pergunta</b> e sublinhe a palavra mais importante dela.</li>
+      <li><b>Volte ao texto</b> e ache a prova da resposta.</li>
+      <li>Responda com uma <b>frase completa</b>, usando palavras da pergunta.</li>
+    </ol>
+    <p style="margin-top:10px">Tipos de pergunta: 📍 <b>Está no texto</b> (é só achar) · 🧩 <b>Pistas</b> (juntar as dicas) · 💭 <b>Minha opinião</b> (explicar o que penso, com motivo).</p></div>
+  <div class="text">
+    <p style="font-family:'Baloo 2',sans-serif;font-size:1.3rem;font-weight:800;color:var(--purple);margin-bottom:4px">O guarda-chuva amarelo</p>
+    <p>Tito saiu da escola correndo e esqueceu o guarda-chuva amarelo pendurado no portão. Lá fora, a chuva batucava nos telhados e as ruas viraram rios.</p>
+    <p>No ponto de ônibus, uma senhora de cabelos brancos tremia de frio, com a sacola de pão encharcada. Tito olhou para o céu, olhou para a senhora e voltou correndo até o portão. Pegou o guarda-chuva e o abriu sobre a cabeça dela.</p>
+    <p>— E você, menino? — ela perguntou.</p>
+    <p>Tito deu de ombros e sorriu:</p>
+    <p>— Eu já estou molhado mesmo.</p>
+    <p>A senhora sorriu também. Naquela tarde cinzenta, o guarda-chuva amarelo parecia um pedacinho de sol.</p>
+  </div>
+  <div class="box game"><span class="tagg">🕵️ Perguntas de detetive</span><div id="g-int"></div></div>
+  <div class="voice" data-model="Os dois ajudam alguém mesmo sem ganhar nada: Tito fica molhado para proteger a senhora, e Carlitos, pobre, faz de tudo para ajudar a florista. A mensagem é a mesma: bondade e generosidade."><span class="tagv">🎤 Ligue as histórias</span><p class="qv">O que Tito e Carlitos têm em comum?</p></div>
+</section>
+
+<section class="part" data-title="Desafio final" data-min="10">
+  <div class="phead"><span class="time">Etapa 6 · 10 min</span><h2>O grande desafio</h2>
+  <p class="lead">14 perguntas misturando tudo o que vai cair na prova.</p></div>
+  <div class="box game"><span class="tagg">🏆 Quiz final</span><div id="g-final"></div></div>
+  <div class="voice" data-model="Resposta livre! Exemplo: aprendi que rima é som igual no final, que metáfora não tem 'como' e que Carlitos ajudou a florista sendo pobre."><span class="tagv">🎤 Para fechar</span><p class="qv">Conte 3 coisas que você aprendeu hoje, como se fosse a professora.</p></div>
+</section>
+
+<div class="navbtns"><button class="gb white" id="prevBtn">⬅ Voltar</button><button class="gb" style="--c:var(--pink)" id="nextBtn">Próxima etapa ➜</button></div>
+
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const COLORS = ['var(--blue)','var(--pink)','var(--orange)','var(--purple)','var(--green)'];
+const YAY = ['Uhuul! 🎉','Mandou bem! ⭐','Isso aí, escritora! ✍️','Acertou em cheio! 🎯','Arrasou! 💖'];
+const pick = a => a[Math.floor(Math.random()*a.length)];
+let soundOn = true, actx = null;
+function beep(ok, f){
+  if (!soundOn) return;
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const notes = f ? [f] : ok ? [660, 880] : [300, 220];
+    notes.forEach((fr, i) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = 'triangle'; o.frequency.value = fr; const t = actx.currentTime + i*.11; g.gain.setValueAtTime(.12, t); g.gain.exponentialRampToValueAtTime(.001, t + .18); o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + .2); });
+  } catch(e){}
+}
+$('#snd').onclick = () => { soundOn = !soundOn; $('#snd').textContent = soundOn ? '🔊' : '🔇'; };
+function confetti(){ if (reduce) return; const cols=['#FF4F9A','#FF9F1C','#FFD23F','#2EC4A0','#3A86FF','#8338EC']; for(let i=0;i<80;i++){const d=document.createElement('div');d.className='conf';d.style.left=Math.random()*100+'vw';d.style.background=cols[i%6];d.style.animationDuration=(1.8+Math.random()*1.8)+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),4200);} }
+let stars = 0, coins = 0;
+const addStar = () => { stars++; $('#stk').textContent = stars; };
+const coin = (n=10) => { coins += n; $('#coins').textContent = coins; };
+
+/* navegação */
+const parts = $$('.part'); let cur = 0;
+parts.forEach((p, i) => { const b = document.createElement('button'); b.className = 'stop'; b.innerHTML = `<b>${i+1}</b>${p.dataset.title}`; b.onclick = () => go(i); $('#track').appendChild(b); });
+$('#roteiro').innerHTML = parts.map((p,i)=>`<li><span>${i+1}. ${p.dataset.title}</span><span>${p.dataset.min} min</span></li>`).join('');
+function go(i){
+  cur = i; parts.forEach((p,k)=>p.classList.toggle('on', k===i));
+  $$('.stop').forEach((s,k)=>{ s.classList.toggle('on', k===i); if (k<i) s.classList.add('done'); });
+  $('#prevBtn').style.visibility = i===0 ? 'hidden' : 'visible';
+  $('#nextBtn').style.visibility = i===parts.length-1 ? 'hidden' : 'visible';
+  $('#roteiro').style.display = i===0 ? '' : 'none';
+  if (i>0) window.scrollTo({top: parts[i].getBoundingClientRect().top + window.scrollY - 90, behavior: reduce?'auto':'smooth'}); else window.scrollTo(0,0);
+  $$('.stop')[i].scrollIntoView({inline:'center', block:'nearest'});
+}
+$('#prevBtn').onclick = () => go(Math.max(0,cur-1));
+$('#nextBtn').onclick = () => go(Math.min(parts.length-1,cur+1));
+
+/* cartões de voz */
+$$('.voice').forEach(v => {
+  const r = document.createElement('div'); r.className = 'row';
+  r.innerHTML = `<button class="gb white show">👀 Ver resposta modelo</button><button class="gb done" style="--c:var(--pink)">Falei em voz alta ⭐</button>`;
+  const m = document.createElement('p'); m.className = 'model'; m.hidden = true; m.textContent = v.dataset.model;
+  v.append(r, m);
+  r.querySelector('.show').onclick = e => { m.hidden = !m.hidden; e.currentTarget.textContent = m.hidden ? '👀 Ver resposta modelo' : 'Esconder'; };
+  r.querySelector('.done').onclick = e => { if (!v.classList.contains('did')){ v.classList.add('did'); e.currentTarget.style.setProperty('--c','var(--green)'); e.currentTarget.textContent = 'Falei! ✅'; addStar(); beep(true); } };
+});
+
+/* motor de quiz */
+function quiz(el, rounds, opts={}){
+  let i, score, order, rev;
+  function start(){ i=0; score=0; rev=[]; order = opts.keep ? rounds.slice() : shuffle(rounds); show(); }
+  function show(){
+    if (i >= order.length){
+      const pct = score/order.length; if (pct >= .7) confetti();
+      el.innerHTML = `<div class="end pop"><div class="big">${pct>=.9?'🏆':pct>=.7?'🌟':'🌱'}</div><h2>${score} de ${order.length}</h2>
+        <p>${pct>=.9?'Perfeito! Você entendeu tudinho!':pct>=.7?'Muito bem! Falta pouquinho.':'Vamos rever os erros juntas e jogar de novo.'}</p>
+        ${rev.length?`<ul class="review">${rev.join('')}</ul>`:''}<button class="gb" style="--c:var(--purple)">Jogar de novo 🔁</button></div>`;
+      el.querySelector('.gb').onclick = start; return;
+    }
+    const x = order[i]; let done = false;
+    el.innerHTML = `<p style="text-align:center;color:var(--soft);font-weight:800">Pergunta ${i+1} de ${order.length} · ✔ ${score}</p>
+      ${x.pre||''}<p class="q">${x.q}</p>
+      <div class="opts">${shuffle(x.o).map((o,k)=>`<button class="gb opt" style="--c:${COLORS[k]}"><span class="letter">${'ABCD'[k]}</span><span class="tx">${o}</span></button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;
+    el.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+      if (done) return; done = true; const fb = el.querySelector('.fb');
+      el.querySelectorAll('.opt').forEach(o => { o.disabled = true; const t = o.querySelector('.tx').textContent; if (t === x.a){ o.style.setProperty('--c','var(--green)'); o.classList.add('pop'); } else if (o !== b) o.classList.add('dim'); });
+      if (b.querySelector('.tx').textContent === x.a){ score++; coin(); beep(true); fb.className='fb good'; fb.innerHTML = pick(YAY) + (x.why ? '<br>' + x.why : ''); }
+      else { b.style.setProperty('--c','var(--red)'); b.classList.add('shake'); beep(false); fb.className='fb no'; fb.innerHTML = 'A resposta é: <b>' + x.a + '</b>' + (x.why ? '<br>' + x.why : ''); rev.push(`<li><b>${x.q.replace(/<[^>]+>/g,'')}</b> ➜ ${x.a}</li>`); }
+      const w = document.createElement('div'); w.className='row'; w.style.cssText='justify-content:center;margin-top:12px';
+      const n = document.createElement('button'); n.className='gb'; n.style.setProperty('--c','var(--blue)'); n.textContent = i+1<order.length ? 'Próxima ➜' : 'Ver resultado 🏁';
+      n.onclick = () => { i++; show(); }; w.appendChild(n); fb.after(w);
+    });
+  }
+  start();
+}
+const Q = (q,a,w,why,pre) => ({q,a,o:[a,...w],why,pre});
+
+/* motor de caixinhas */
+function sortGame(el, S){
+  function start(){
+    let left = S.i.length, sel = null, score = 0; const missed = new Set();
+    el.innerHTML = `<p style="text-align:center;font-weight:800">${S.t}</p><div class="pool">${shuffle(S.i).map(([t,b])=>`<button class="gb" data-b="${b}">${t}</button>`).join('')}</div>
+      <div class="buckets">${S.b.map((b,k)=>`<button class="bucket" data-b="${b}" style="--c:${COLORS[k]}"><b>${b}</b><div class="in-b"></div></button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;
+    const fb = el.querySelector('.fb');
+    el.querySelectorAll('.pool .gb').forEach(p => p.onclick = () => { el.querySelectorAll('.pool .gb').forEach(x=>x.classList.remove('sel')); p.classList.add('sel'); sel = p; fb.textContent=''; });
+    el.querySelectorAll('.bucket').forEach(bk => bk.onclick = () => {
+      if (!sel){ fb.className='fb no'; fb.textContent='Primeiro toque em uma frase lá em cima 👆'; return; }
+      if (sel.dataset.b === bk.dataset.b){
+        const s = document.createElement('span'); s.className='pop'; s.textContent = sel.textContent; bk.querySelector('.in-b').appendChild(s);
+        if (!missed.has(sel.textContent)) score++;
+        sel.remove(); sel = null; left--; coin(); beep(true); fb.className='fb good'; fb.textContent = pick(YAY);
+        if (!left){ fb.innerHTML = `Terminou! ${score} de ${S.i.length} de primeira. `; const r = document.createElement('button'); r.className='gb white'; r.textContent='Jogar de novo 🔁'; r.onclick=start; fb.appendChild(r); if (score >= S.i.length*.7) confetti(); }
+      } else { beep(false); bk.classList.remove('shake'); void bk.offsetWidth; bk.classList.add('shake'); missed.add(sel.textContent); fb.className='fb no'; fb.textContent = S.hint ? S.hint(sel.dataset.b) : 'Não é essa caixinha. Pense de novo! 🤔'; }
+    });
+  }
+  start();
+}
+
+/* motor de ordem */
+function orderGame(el, title, steps, after){
+  function start(){
+    let n = 0;
+    el.innerHTML = `<p style="text-align:center;font-weight:800">${title}</p><div class="ansline"><div class="ph">Toque no 1º</div></div>
+      <div class="pool">${shuffle(steps).map((s,k)=>`<button class="gb" style="--c:${COLORS[k%5]}">${s}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;
+    const al = el.querySelector('.ansline'), fb = el.querySelector('.fb');
+    el.querySelectorAll('.pool .gb').forEach(b => b.onclick = () => {
+      if (b.textContent === steps[n]){
+        n++; b.remove(); al.querySelector('.ph')?.remove();
+        al.insertAdjacentHTML('beforeend', `<div class="step pop"><i>${n}</i>${steps[n-1]}</div>${n<steps.length?`<div class="ph">Toque no ${n+1}º</div>`:''}`);
+        beep(true); coin(5); fb.className='fb good'; fb.textContent = n<steps.length ? 'Isso! E depois?' : '';
+        if (n === steps.length){ confetti(); fb.innerHTML = (after || pick(YAY)) + ' '; const r = document.createElement('button'); r.className='gb white'; r.textContent='De novo 🔁'; r.onclick=start; fb.appendChild(r); }
+      } else { beep(false); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); fb.className='fb no'; fb.textContent='Ainda não. Qual vem agora?'; }
+    });
+  }
+  start();
+}
+
+/* ETAPA 1 */
+quiz($('#g-rima'), [
+  Q('Qual palavra rima com <b>coração</b>?','limão',['janela','sapato','escola']),
+  Q('Qual palavra rima com <b>janela</b>?','panela',['limão','bola','gato']),
+  Q('Qual palavra rima com <b>estrela</b>?','amarela',['estrada','céu','lua']),
+  Q('Qual palavra rima com <b>gato</b>?','sapato',['cachorro','bola','mesa']),
+  Q('Qual palavra rima com <b>papel</b>?','pastel',['caneta','livro','folha']),
+  Q('Qual palavra rima com <b>escola</b>?','bola',['aula','lápis','sala']),
+  Q('Qual palavra rima com <b>chocolate</b>?','abacate',['bombom','doce','morango'])
+]);
+
+/* ETAPA 2: poema */
+const pInfo = {
+  v:'<b>📏 Versos:</b> este poema tem <b>8 versos</b>. Verso é cada linha do poema.',
+  e:'<b>🧱 Estrofes:</b> tem <b>2 estrofes</b>, cada uma com 4 versos. Estrofe é o grupinho de versos separado por um espaço.',
+  r:'<b>🎵 Rimas:</b> <span style="background:var(--yellow);border-radius:6px;padding:0 4px">céu/papel</span> (versos 2 e 4), <span style="background:#9EF0D9;border-radius:6px;padding:0 4px">dedo/medo</span> (5 e 7), <span style="background:#FFB8D6;border-radius:6px;padding:0 4px">meio/cheio</span> (6 e 8). Rima é quando o final das palavras soa igual.<br>🎁 Bônus: "a lua bocejou" é <b>personificação</b> e "pijama de nuvem" é <b>metáfora</b>!'
+};
+$$('[data-show]').forEach(b => b.onclick = () => { const k = b.dataset.show; $('#poem').classList.toggle('show-'+k); $('#poemInfo').innerHTML = pInfo[k]; beep(true); });
+function clap(sy){
+  const box = $('#syl'); box.innerHTML = sy.map(s=>`<span>${s}</span>`).join(''); const sp = box.querySelectorAll('span');
+  if (reduce){ sp.forEach(s=>s.classList.add('beat')); return; }
+  sp.forEach((s,k) => setTimeout(() => { sp.forEach(x=>x.classList.remove('beat')); s.classList.add('beat'); beep(true, 520 + k*40); if (k===sp.length-1) setTimeout(()=>s.classList.remove('beat'), 400); }, k*480));
+}
+$('#clap1').onclick = () => clap(['bo','ce','jou','lá','no','céu']);
+$('#clap2').onclick = () => clap(['dor','miu','de','no','vo','sem','me','do']);
+quiz($('#g-sel'), [
+  Q('"e um chapéu de ____" (verso 4). Qual palavra o poeta escolheu?','papel',['lã','couro','palha'],'<b>Papel</b> rima com <b>céu</b> (verso 2)! O som decidiu a escolha.'),
+  Q('"Contou estrelas no ____" (verso 5). Qual palavra combina?','dedo',['céu','caderno','escuro'],'<b>Dedo</b> rima com <b>medo</b> (verso 7). E contar nos dedos deixa a lua com jeitinho de criança.'),
+  Q('"num travesseiro bem ____" (verso 8). Qual palavra fecha a rima?','cheio',['macio','branco','grande'],'<b>Cheio</b> rima com <b>meio</b> (verso 6).')
+], {keep:true});
+orderGame($('#g-org'), 'Monte a 2ª estrofe', ['Contou estrelas no dedo,','perdeu a conta no meio,','dormiu de novo, sem medo,','num travesseiro bem cheio.'], 'Estrofe montada! Leia em voz alta sentindo a rima 🎵');
+
+/* ETAPA 3: figuras */
+const FB = ['🧸 Personificação','🎭 Metáfora','🔁 Aliteração','😜 Trocadilho'];
+sortGame($('#g-fig'), { t:'Toque em uma frase e depois na figura certa.', b:FB, i:[
+  ['O sol sorriu para as crianças.',FB[0]],['As árvores dançavam com o vento.',FB[0]],['A porta resmungou quando abri.',FB[0]],
+  ['Minha irmã é um furacão.',FB[1]],['A sala de aula virou um zoológico.',FB[1]],['Meu avô é uma biblioteca.',FB[1]],
+  ['O rato roeu a roupa do rei de Roma.',FB[2]],['Pedro pintou a porta de preto.',FB[2]],['Três tigres tristes.',FB[2]],
+  ['O que o tomate foi fazer no banco? Tirar extrato!',FB[3]],['O livro de matemática ficou triste: tinha muitos problemas.',FB[3]],['O que o pato disse para a pata? Vem quá!',FB[3]]
+], hint: b => ({[FB[0]]:'Dica: nessa frase, algo que não é gente age como gente? 🧸',[FB[1]]:'Dica: a frase diz que uma coisa É outra, sem "como"? 🎭',[FB[2]]:'Dica: leia em voz alta. Tem um som que se repete? 🔁',[FB[3]]:'Dica: é uma piada com palavra de dois sentidos? 😜'})[b] });
+sortGame($('#g-mc'), { t:'Tem "como" ou "parece"? Então é comparação!', b:['🎭 Metáfora','🔍 Comparação'], i:[
+  ['Meu irmão é um furacão.','🎭 Metáfora'],['Meu irmão corre como um furacão.','🔍 Comparação'],
+  ['A sala virou um zoológico.','🎭 Metáfora'],['A sala parecia um zoológico.','🔍 Comparação'],
+  ['Seus olhos são duas estrelas.','🎭 Metáfora'],['Seus olhos brilham como estrelas.','🔍 Comparação']
+]});
+
+/* ETAPA 4: Chaplin */
+const SC = [
+  ['🌸','Carlitos conhece uma <b>florista cega</b> que vende flores na rua. Ela pensa que ele é um homem <b>rico</b>.'],
+  ['🎩','Ele salva um <b>milionário</b> de um perigo. O milionário vira seu amigo, mas só quando está bêbado. Sóbrio, nem o reconhece.'],
+  ['🧹','Para ajudar a moça, Carlitos <b>trabalha</b> e até <b>luta boxe</b> para ganhar dinheiro.'],
+  ['💰','O milionário lhe dá dinheiro para a <b>operação dos olhos</b> da florista. Carlitos entrega tudo a ela, mas é acusado de roubo e vai <b>preso</b>.'],
+  ['👀','A moça faz a operação, <b>volta a enxergar</b> e abre uma loja de flores. Ela sonha em conhecer o "rico" que a ajudou.'],
+  ['🤝','Carlitos sai da prisão, pobre e maltrapilho. Ela lhe oferece uma flor, <b>toca a mão dele</b> e descobre: era ele!']
+];
+$('#scenes').innerHTML = SC.map((s,k)=>`<div class="scene"><span class="num">${k+1}</span><span class="emo">${s[0]}</span><p style="margin:0">${s[1]}</p></div>`).join('');
+orderGame($('#g-hist'), 'Toque nas cenas na ordem da história', ['Conhece a florista cega','Salva o milionário','Trabalha e luta boxe','Entrega o dinheiro e é preso','A moça volta a enxergar','Ela o reconhece pela mão'], 'História completa! Agora conte ela em voz alta 🎬');
+const GL = [
+  ['Cinema mudo','Filmes sem falas. A história é contada por imagens, gestos, música e letreiros.'],
+  ['Preto e branco','Filmes antigos sem cores, só em tons de cinza.'],
+  ['Letreiro','Frase escrita que aparecia na tela para mostrar uma fala ou explicar a cena.'],
+  ['Trilha sonora','A música do filme. Chaplin compôs a de Luzes da Cidade!'],
+  ['Diretor','Quem comanda o filme e decide como cada cena vai ser.'],
+  ['Roteiro','O texto que planeja a história, as cenas e as ações do filme.'],
+  ['Reconto','Contar de novo uma história já existente, com outras palavras.'],
+  ['Carlitos','O vagabundo pobre, gentil e elegante criado por Chaplin.']
+];
+$('#flips').innerHTML = GL.map((g,k)=>`<button class="flip" style="--c:${COLORS[k%5]}" data-k="${k}">${g[0]} 🔄</button>`).join('');
+$$('.flip').forEach(f => f.onclick = () => { const g = GL[f.dataset.k]; const b = f.classList.toggle('back'); f.textContent = b ? g[1] : g[0] + ' 🔄'; beep(true, 700); });
+
+/* ETAPA 5: interpretação */
+quiz($('#g-int'), [
+  Q('📍 Onde Tito esqueceu o guarda-chuva?','No portão da escola',['No ponto de ônibus','Na casa da senhora','Dentro do ônibus'],'Está escrito no 1º parágrafo: "pendurado no portão".'),
+  Q('📍 O que acontecia com a senhora no ponto de ônibus?','Tremia de frio, com a sacola molhada',['Estava dormindo','Vendia guarda-chuvas','Esperava o Tito'],'Prova: "tremia de frio, com a sacola de pão encharcada".'),
+  Q('🔤 No texto, "encharcada" quer dizer:','Muito molhada',['Muito pesada','Rasgada','Vazia']),
+  Q('🧩 Por que Tito voltou correndo até o portão?','Para pegar o guarda-chuva e proteger a senhora',['Porque esqueceu a mochila','Para fugir da chuva','Para chamar a professora'],'Juntando as pistas: ele olhou para a senhora e depois abriu o guarda-chuva sobre ela.'),
+  Q('"A chuva batucava nos telhados." Que figura é essa?','Personificação',['Metáfora','Aliteração','Trocadilho'],'A chuva não é gente, mas "batuca" como uma pessoa tocando tambor.'),
+  Q('"As ruas viraram rios." Que figura é essa?','Metáfora',['Personificação','Trocadilho','Aliteração'],'As ruas não viraram rios de verdade: é uma comparação sem "como".'),
+  Q('🧩 Quando Tito diz "Eu já estou molhado mesmo", ele mostra que é:','Generoso',['Egoísta','Medroso','Mal-educado'],'Ele prefere ficar molhado para ajudar outra pessoa.'),
+  Q('💭 Qual é o tema principal do texto?','Solidariedade e gentileza',['Os perigos da chuva','A vida na escola','Como usar guarda-chuva'])
+], {keep:true});
+
+/* ETAPA 6: final */
+quiz($('#g-final'), [
+  Q('Cada linha de um poema se chama:','Verso',['Estrofe','Rima','Parágrafo']),
+  Q('Um grupo de versos separado por espaço é uma:','Estrofe',['Rima','Frase','Sílaba']),
+  Q('O que é rima?','Sons parecidos no final dos versos',['Um poema bem longo','O título do poema','Palavras difíceis']),
+  Q('O ritmo de um poema é:','A musicalidade, a batida dos versos',['O número de estrofes','A história do poema','O nome do autor']),
+  Q('"O vento cantava na janela." Que figura é essa?','Personificação',['Metáfora','Aliteração','Trocadilho']),
+  Q('"Minha mãe é uma rainha." Que figura é essa?','Metáfora',['Personificação','Aliteração','Trocadilho']),
+  Q('"O rato roeu a roupa do rei de Roma." Que figura é essa?','Aliteração',['Metáfora','Personificação','Trocadilho']),
+  Q('"O livro de matemática ficou triste porque tinha muitos problemas." Que figura é essa?','Trocadilho',['Aliteração','Metáfora','Comparação']),
+  Q('"Ele é forte como um touro." Isso é:','Comparação (tem "como")',['Metáfora','Aliteração','Trocadilho'],'Com "como" é comparação. Sem "como" ("Ele é um touro") seria metáfora.'),
+  Q('Qual é o personagem mais famoso de Charles Chaplin?','Carlitos',['Mickey','Pinóquio','Chaves']),
+  Q('Em Luzes da Cidade, Carlitos ajuda:','Uma florista cega',['Um palhaço de circo','Um menino perdido','Um cachorro de rua']),
+  Q('O que era o cinema mudo?','Filmes sem falas, com gestos, música e letreiros',['Filmes sem imagem','Filmes só com música de rádio','Filmes proibidos de ver']),
+  Q('Como a florista reconhece Carlitos no final?','Pelo toque da mão dele',['Pela voz dele','Por uma foto','Pelo chapéu']),
+  Q('"Um tesouro em preto e branco" é uma metáfora porque:','Compara os filmes a algo valioso, sem usar "como"',['Fala de um tesouro de verdade','Repete o som do T','Faz uma piada'])
+], {keep:true});
+
+go(0);
+
+</script>
+</body>
+</html>
